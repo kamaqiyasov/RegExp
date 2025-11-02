@@ -2,6 +2,7 @@ from pprint import pprint
 # читаем адресную книгу в формате CSV в список contacts_list
 import csv
 import os
+import re
 
 class PhoneBook():    
     def __init__(self, lastname, fisirtma):
@@ -32,6 +33,11 @@ class PhoneBook():
         if not isinstance(other, PhoneBook):
             return False
         return self.lastname == other.lastname and self.firstname == other.firstname
+
+def format_phone(phone_number):
+    regex = r"(\+7|8)\s?\(?(\d{3})\)?\s?-?(\d{3})\s?-?(\d{2})\s?-?(\d{2})(.?)($|\(?(доб.)\s?(\d{4}).?)"
+    subst = "+7(\\2)\\3-\\4-\\5\\6\\8\\9"
+    return re.sub(regex, subst, phone_number, 0)
     
 with open(os.path.join(os.getcwd(), "phonebook_raw.csv"), encoding="utf-8") as f:
     rows = csv.reader(f, delimiter=",")
@@ -52,7 +58,7 @@ for row in contacts_list[1:]:
         
     employee.organization = row[3]
     employee.position = row[4]
-    employee.phone = row[5]
+    employee.phone = format_phone(row[5])
     employee.email = row[6]
     
     employee_exist = None
